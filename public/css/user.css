@@ -1,0 +1,60 @@
+* {
+    font-family: "Poppins", "sans-serif";
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%; /* Memastikan body mengambil tinggi penuh */
+    margin: 0; /* Menghapus margin default */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Mengatur arah kolom */
+    justify-content: space-between;
+}
+
+main {
+    flex: 1; /* Membuat main mengambil ruang yang tersisa */
+}
+
+.icon-nav {
+    position: relative;
+    color: #fff5e4;
+}
+.icon-nav:hover {
+    color: #eeedea;
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: #fff5e4;
+}
+.nav-item .nav-link:hover {
+    color: #eeedea;
+}
+.circle {
+    position: absolute; /* Ganti fixed dengan absolute */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    top: -5px; /* Atur posisi vertikal */
+    right: -10px; /* Atur posisi horizontal */
+    transform: translate(50%, -50%); /* Pindahkan untuk menempatkan di atas */
+}
+
+/* Style Footer */
+footer {
+    background-color: #526f55;
+    color: #fff5e4;
+    margin-top: 150px;
+    padding: 20px 0;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
