@@ -19,6 +19,41 @@ main {
     flex: 1; /* Membuat main mengambil ruang yang tersisa */
 }
 
+/*
+Style
+Login
+*/
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.login-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.form-control:focus {
+    box-shadow: none;
+    border-color: #5cb85c;
+}
+
+.error-message {
+    color: #d9534f;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/*
+Style
+Navbar
+*/
 .icon-nav {
     position: relative;
     color: #fff5e4;
@@ -47,7 +82,10 @@ main {
     transform: translate(50%, -50%); /* Pindahkan untuk menempatkan di atas */
 }
 
-/* Style Footer */
+/*
+Style
+Footer
+*/
 footer {
     background-color: #526f55;
     color: #fff5e4;

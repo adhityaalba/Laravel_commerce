@@ -18,17 +18,56 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
 
     <title>Griya Bibit | Register</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .register-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .register-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #5cb85c;
+        }
+
+        .btn-register {
+            background-color: #5cb85c;
+            border-color: #5cb85c;
+        }
+
+        .btn-register:hover {
+            background-color: #4cae4c;
+            border-color: #4cae4c;
+        }
+
+        .alert {
+            margin-top: 15px;
+        }
+    </style>
 </head>
 
 <body>
-
-
     <main>
         <header>
             @include('user.component.navbar')
         </header>
-        <div class="container mt-5">
-            <h2>Registrasi</h2>
+        <div class="register-container">
+            <h2 class="register-title">Registrasi</h2>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -65,11 +104,12 @@
                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
                         required>
                 </div>
-                <button type="submit" class="btn btn-primary">Daftar</button>
+                <button type="submit" class="btn btn-register w-100">Daftar</button>
             </form>
 
-            <p class="mt-3">Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>.</p>
+            <p class="mt-3 text-center">Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>.</p>
         </div>
+
         @include('user.component.footer')
     </main>
 

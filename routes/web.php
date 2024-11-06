@@ -9,22 +9,27 @@ use App\Http\Controllers\LoginController;
 // Halaman Utama
 Route::get('/', [Controller::class, 'index'])->name('Home');
 
+
+
 // CART
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
+
 // DATA
 Route::resource('products', ProductController::class);
+
+
 
 // LOGIN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
 // REGISTER
 Route::get('/register', [LoginController::class, 'showRegistrationForm'])->name('register');
-// Route untuk menyimpan data registrasi
 Route::post('/register', [LoginController::class, 'register']);
 
 // Rute dashboard untuk admin dan pengguna biasa berdasarkan role
