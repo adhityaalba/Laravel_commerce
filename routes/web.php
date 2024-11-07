@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\UserController;
 
 // Halaman Utama
 Route::get('/', [Controller::class, 'index'])->name('Home');
@@ -43,4 +45,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/dashboard', function () {
         return redirect()->route('Home'); // Mengarahkan ke halaman Home
     })->middleware('can:isUser')->name('user.dashboard');
+});
+
+
+// PAYMENT
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    Route::post('/payment/upload', [PaymentController::class, 'uploadPaymentProof'])->name('payment.upload');
+});
+
+
+// TRANSACTION View
+Route::middleware(['auth'])->group(function () {
+    // Route untuk menampilkan transaksi pengguna
+    Route::get('/user/transactions', [UserController::class, 'showTransactions'])->name('transactions');
 });

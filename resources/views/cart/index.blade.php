@@ -12,12 +12,13 @@
 
 <body>
     <header>
-        @include('user.component.navbar')
+        @include('user.component.navbar') <!-- Navbar -->
     </header>
     <main class="container my-5">
         <h2>Keranjang Belanja</h2>
 
         @if (count($cart) > 0)
+            <!-- Menampilkan jika ada produk dalam keranjang -->
             <table class="table">
                 <thead>
                     <tr>
@@ -46,7 +47,8 @@
                 </tbody>
             </table>
 
-            <div class="d-flex justify-content-between">
+            <!-- Menampilkan total harga dan tombol menuju pembayaran -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
                 <h4>Total: Rp
                     {{ number_format(
                         array_reduce(
@@ -61,13 +63,13 @@
                         '.',
                     ) }}
                 </h4>
-                {{--  <a href="{{ route('checkout') }}" class="btn btn-success">Checkout</a>  --}}
+                <a href="{{ route('payment') }}" class="btn btn-primary btn-lg">Pembayaran</a>
             </div>
         @else
             <p>Keranjang Anda kosong.</p>
         @endif
     </main>
-    @include('user.component.footer')
+    @include('user.component.footer') <!-- Footer -->
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"

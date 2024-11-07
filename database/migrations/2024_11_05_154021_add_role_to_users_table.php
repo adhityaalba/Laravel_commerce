@@ -9,7 +9,10 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user'); // 'user' untuk pelanggan dan 'admin' untuk admin
+            // Cek apakah kolom 'role' sudah ada
+            if (!Schema::hasColumn('users', 'role')) {
+                $table->string('role')->default('user');
+            }
         });
     }
 

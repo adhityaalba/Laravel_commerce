@@ -11,7 +11,7 @@ class CartController extends Controller
     // LIST KERANJANG
     public function index()
     {
-        // Mengambil cart dari sesi
+
         $cart = Session::get('cart', []);
         return view('cart.index', compact('cart'));
     }
