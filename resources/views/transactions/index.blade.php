@@ -25,8 +25,8 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Produk</th>
-                            <th>Total Pembayaran</th>
+                            <th>No_Inv</th>
+                            <th>Tanggal Pembayaran</th>
                             <th>Status Pembayaran</th>
                         </tr>
                     </thead>

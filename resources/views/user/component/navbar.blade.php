@@ -34,12 +34,14 @@
                         <button type="submit" class="btn btn-danger">Logout</button>
                     </form>
 
-                    <div class="notif position-relative">
-                        <a href="{{ route('cart.index') }}" class="fs-6 icon-nav">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                        </a>
-                        <div class="circle">{{ \App\Http\Controllers\CartController::countItems() }}</div>
-                    </div>
+                    @if (!in_array(Route::currentRouteName(), ['cart.index', 'transactions', 'payment']))
+                        <div class="notif position-relative">
+                            <a href="{{ route('cart.index') }}" class="fs-6 icon-nav">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </a>
+                            <div class="circle">{{ \App\Http\Controllers\CartController::countItems() }}</div>
+                        </div>
+                    @endif
                 @else
                     <a href="{{ route('register') }}" class="btn btn-warning" style="background-color: #f08e43;">
                         Login | Register

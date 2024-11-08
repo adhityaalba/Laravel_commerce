@@ -6,6 +6,9 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 
 class PaymentController extends Controller
 {
@@ -19,6 +22,25 @@ class PaymentController extends Controller
 
         return view('payment.index', compact('cart', 'total'));
     }
+
+
+    // AMBIL ONGKIR
+    public function getOngkir(Request $request)
+    {
+        // Generate ongkir random antara 10.000 dan 30.000
+        $ongkir = rand(10000, 30000);
+
+        // Mengambil data lokasi dari frontend (optional, hanya untuk ditampilkan)
+        $userLocation = $request->input('location');  // Lokasi pengguna, misalnya untuk display
+
+        // Kembalikan response ongkir dan lokasi ke frontend
+        return response()->json([
+            'ongkir' => $ongkir,
+            'user_location' => $userLocation,
+        ]);
+    }
+
+
 
     // Mengunggah bukti pembayaran
     public function uploadPaymentProof(Request $request)

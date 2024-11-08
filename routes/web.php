@@ -60,3 +60,8 @@ Route::middleware(['auth'])->group(function () {
     // Route untuk menampilkan transaksi pengguna
     Route::get('/user/transactions', [UserController::class, 'showTransactions'])->name('transactions');
 });
+
+
+
+// ONGKIR
+Route::get('/province', [PaymentController::class, 'get_province'])->name('province');
