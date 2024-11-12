@@ -25,7 +25,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>No_Inv</th>
+                            <th>No_Invoice</th>
                             <th>Tanggal Pembayaran</th>
                             <th>Status Pembayaran</th>
                         </tr>
@@ -33,15 +33,20 @@
                     <tbody>
                         @foreach ($transactions as $transaction)
                             <tr>
-                                <td>{{ $transaction->id }}</td>
+                                <td>INV-{{ $transaction->id }}</td>
                                 <td>{{ $transaction->created_at->format('d M Y') }}</td>
                                 <td>
                                     @if ($transaction->status == 'paid')
                                         <span class="badge bg-success">Sudah Dibayar</span>
-                                    @else
+                                    @elseif ($transaction->status == 'pending')
                                         <span class="badge bg-warning">Menunggu Pembayaran</span>
+                                    @elseif ($transaction->status == 'approved')
+                                        <span class="badge bg-info">Disetujui</span>
+                                    @elseif ($transaction->status == 'rejected')
+                                        <span class="badge bg-danger">Ditolak</span>
                                     @endif
                                 </td>
+                                
                             </tr>
                         @endforeach
                     </tbody>

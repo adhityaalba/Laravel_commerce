@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 // Halaman Utama
 Route::get('/', [Controller::class, 'index'])->name('Home');
@@ -38,7 +39,7 @@ Route::post('/register', [LoginController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     // Rute untuk admin
     Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard'); // Halaman dashboard admin
+        return view('admin.dashboard');
     })->middleware('can:isAdmin')->name('admin');
 
     // Rute untuk user yang diarahkan ke halaman Home
@@ -65,3 +66,23 @@ Route::middleware(['auth'])->group(function () {
 
 // ONGKIR
 Route::get('/province', [PaymentController::class, 'get_province'])->name('province');
+
+
+
+// ADMIN
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/transactions', [AdminController::class, 'transactions'])->name('admin.transactions');
+    Route::post('/admin/transactions/{id}/update', [AdminController::class, 'updateTransactionStatus'])->name('admin.updateTransactionStatus');
+
+    Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
+    Route::get('/admin/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+    Route::get('/admin/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+    Route::put('/admin/products/{id}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+    Route::delete('/admin/products/{id}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+
+    Route::post('/admin/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+
+    Route::get('/customers', [AdminController::class, 'customers'])->name('admin.customers');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+});

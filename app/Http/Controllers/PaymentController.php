@@ -49,9 +49,11 @@ class PaymentController extends Controller
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Menyimpan gambar bukti pembayaran
+        // Menyimpan gambar bukti pembayaran langsung ke public path
         $paymentProof = $request->file('payment_proof');
-        $path = $paymentProof->store('payment_proofs', 'public');  // Menyimpan file di folder storage/public/payment_proofs
+        $fileName = time() . '.' . $paymentProof->getClientOriginalExtension();
+        $paymentProof->move(public_path('storage/payment_proofs'), $fileName);
+        $path = 'payment_proofs/' . $fileName;
 
         // Menyimpan data pembayaran ke database
         $payment = new Payment();
