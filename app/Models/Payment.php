@@ -12,7 +12,10 @@ class Payment extends Model
     protected $fillable = [
         'user_id',
         'payment_proof',
-        'status'
+        'status',
+        'total_price',
+        'total_amount',
+        'ongkir',  // Pastikan ini ada
     ];
 
     public function user()

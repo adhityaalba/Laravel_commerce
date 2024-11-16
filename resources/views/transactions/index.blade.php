@@ -27,7 +27,9 @@
                             <th>No_Invoice</th>
                             <th>Produk</th>
                             <th>Kuantitas</th>
-                            <th>Total Harga</th>
+                            <th>Harga Produk</th>
+                            <th>Harga Ongkir</th>
+                            <th>Total Payment</th>
                             <th>Status Pembayaran</th>
                             <th>Tanggal Pembayaran</th>
                         </tr>
@@ -63,6 +65,22 @@
                                     Rp {{ number_format($totalPrice, 0, ',', '.') }}
                                 </td>
 
+                                <!-- Ongkir -->
+                                <td>
+                                    @php
+                                        $ongkir = $groupedTransactions[0]->payment->ongkir; // Ongkir dari pembayaran
+                                    @endphp
+                                    Rp {{ number_format($ongkir, 0, ',', '.') }} <!-- Ongkir -->
+                                </td>
+
+                                <!-- Total Pembayaran -->
+                                <td>
+                                    @php
+                                        $totalWithOngkir = $totalPrice + $ongkir; // Total termasuk ongkir
+                                    @endphp
+                                    Rp {{ number_format($totalWithOngkir, 0, ',', '.') }}
+                                </td>
+
                                 <!-- Status Pembayaran -->
                                 <td>
                                     @if ($groupedTransactions[0]->payment->status == 'paid')
@@ -81,6 +99,7 @@
                             </tr>
                         @endforeach
                     </tbody>
+
                 </table>
             @endif
         </div>

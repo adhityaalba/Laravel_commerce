@@ -13,9 +13,36 @@ class PaymentController extends Controller
     public function index()
     {
         // Ambil cart dari session
-        $cart = Session::get('cart', []);  // Menyediakan default array kosong jika tidak ada data di session
-
+        $cart = Session::get('cart', []);
         // Cek apakah cart kosong
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
+        }
+        // Hitung total harga dari semua item di cart
+        $totalPrice = 0;
+        foreach ($cart as $productId => $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+        // Hitung ongkir
+        $ongkir = rand(10000, 30000);  // Ongkir acak antara 10.000 dan 30.000
+        // Total pembayaran akhir
+        $totalPembayaranAkhir = $totalPrice + $ongkir;
+        // Kirim data cart, totalPrice, ongkir, dan totalPembayaranAkhir ke view
+        return view('payment.index', compact('cart', 'totalPrice', 'ongkir', 'totalPembayaranAkhir'));
+    }
+
+
+
+
+    public function uploadPaymentProof(Request $request)
+    {
+        // Validasi file bukti pembayaran
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Ambil data keranjang dari session
+        $cart = Session::get('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
         }
@@ -26,16 +53,11 @@ class PaymentController extends Controller
             $totalPrice += $item['price'] * $item['quantity'];
         }
 
-        // Kirim data cart dan totalPrice ke view
-        return view('payment.index', compact('cart', 'totalPrice'));
-    }
+        // Hitung ongkir
+        $ongkir = rand(10000, 30000);  // Ongkir acak antara 10.000 dan 30.000
 
-    public function uploadPaymentProof(Request $request)
-    {
-        // Validasi file bukti pembayaran
-        $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        // Total pembayaran akhir
+        $totalPembayaranAkhir = $totalPrice + $ongkir;
 
         // Menyimpan gambar bukti pembayaran
         if ($request->hasFile('payment_proof') && $request->file('payment_proof')->isValid()) {
@@ -49,40 +71,22 @@ class PaymentController extends Controller
 
         // Menyimpan data pembayaran ke database
         $payment = new Payment();
-        $payment->user_id = auth()->id();  // Mengambil id user yang sedang login
+        $payment->user_id = auth()->id();
         $payment->payment_proof = $path;
         $payment->status = 'pending';
+        $payment->ongkir = $ongkir;  // Menyimpan ongkir
+        $payment->total_amount = $totalPembayaranAkhir;  // Menyimpan total pembayaran akhir (harga produk + ongkir)
         $payment->save();
-
-        // Ambil data keranjang dari session
-        $cart = Session::get('cart', []);
-
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
-        }
 
         // Proses transaksi untuk setiap produk dalam keranjang
         foreach ($cart as $productId => $item) {
-            // Cek apakah transaksi untuk produk ini sudah ada
-            $existingTransaction = TransactionsUser::where('payment_id', $payment->id)
-                ->where('product_id', $productId)
-                ->first();
-
-            if ($existingTransaction) {
-                // Jika sudah ada, update transaksi dengan menambah kuantitas dan total harga
-                $existingTransaction->quantity += $item['quantity'];
-                $existingTransaction->total_price += $item['price'] * $item['quantity'];
-                $existingTransaction->save();
-            } else {
-                // Jika belum ada, buat transaksi baru
-                TransactionsUser::create([
-                    'user_id' => auth()->id(),
-                    'product_id' => $productId,
-                    'payment_id' => $payment->id,
-                    'quantity' => $item['quantity'],
-                    'total_price' => $item['price'] * $item['quantity'],
-                ]);
-            }
+            TransactionsUser::create([
+                'user_id' => auth()->id(),
+                'product_id' => $productId,
+                'payment_id' => $payment->id,
+                'quantity' => $item['quantity'],
+                'total_price' => $item['price'] * $item['quantity'],
+            ]);
 
             // Kurangi stok produk
             $product = Product::findOrFail($productId);

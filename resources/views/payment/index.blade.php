@@ -42,9 +42,8 @@
                     </tbody>
                 </table>
 
-
                 <div class="d-flex justify-content-between">
-                    <h4>Total Pembayaran: Rp {{ number_format($total, 0, ',', '.') }}</h4>
+                    <h4>Total Pembayaran: Rp {{ number_format($totalPembayaranAkhir, 0, ',', '.') }}</h4>
                 </div>
             </div>
 
@@ -59,14 +58,16 @@
                     <button type="submit" class="btn btn-primary">Upload Bukti Pembayaran</button>
                 </form>
 
+                <!-- Tampilkan Ongkir -->
                 <div class="my-4">
                     <h5>Detail Lokasi dan Ongkir</h5>
                     <p>Lokasi Pengiriman: <span id="user-location">Semarang</span></p>
                     <p>Dikirim dari: Kediri</p>
-                    <p>Ongkir: Rp <span id="ongkir"></span></p>
-                    <h4>Total Pembayaran Akhir: Rp <span id="totalPembayaran"></span></h4>
-                </div>
+                    <p>Ongkir: Rp {{ number_format($ongkir, 0, ',', '.') }}</p>
 
+                    <!-- Total Pembayaran Akhir -->
+                    <h4>Total Pembayaran Akhir: Rp {{ number_format($totalPembayaranAkhir, 0, ',', '.') }}</h4>
+                </div>
             </div>
         </div>
     </main>
