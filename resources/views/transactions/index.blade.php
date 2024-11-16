@@ -46,7 +46,7 @@
                                         <span class="badge bg-danger">Ditolak</span>
                                     @endif
                                 </td>
-                                
+
                             </tr>
                         @endforeach
                     </tbody>
