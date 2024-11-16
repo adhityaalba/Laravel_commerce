@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/user.css') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
-    <title>Keranjang Belanja</title>
+    <title>Riwayat Transaksi</title>
 </head>
 
 <body>
@@ -15,46 +15,75 @@
         @include('user.component.navbar') <!-- Navbar -->
     </header>
     <main>
-
-        <div class="container">
+        <div class="container my-5">
             <h2>Daftar Transaksi Anda</h2>
 
             @if ($transactions->isEmpty())
                 <p>Belum ada transaksi.</p>
             @else
-                <table class="table">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>No_Invoice</th>
-                            <th>Tanggal Pembayaran</th>
+                            <th>Produk</th>
+                            <th>Kuantitas</th>
+                            <th>Total Harga</th>
                             <th>Status Pembayaran</th>
+                            <th>Tanggal Pembayaran</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($transactions as $transaction)
+                        @foreach ($transactions->groupBy('payment_id') as $paymentId => $groupedTransactions)
                             <tr>
-                                <td>INV-{{ $transaction->id }}</td>
-                                <td>{{ $transaction->created_at->format('d M Y') }}</td>
+                                <!-- Nomor Invoice -->
+                                <td>INV-{{ $paymentId }}</td>
+
+                                <!-- Produk yang Dibeli -->
                                 <td>
-                                    @if ($transaction->status == 'paid')
+                                    @foreach ($groupedTransactions as $transaction)
+                                        {{ $transaction->product->nama }}<br>
+                                    @endforeach
+                                </td>
+
+                                <!-- Kuantitas -->
+                                <td>
+                                    @foreach ($groupedTransactions as $transaction)
+                                        {{ $transaction->quantity }}<br>
+                                    @endforeach
+                                </td>
+
+                                <!-- Total Harga -->
+                                <td>
+                                    @php
+                                        $totalPrice = 0;
+                                        foreach ($groupedTransactions as $transaction) {
+                                            $totalPrice += $transaction->total_price;
+                                        }
+                                    @endphp
+                                    Rp {{ number_format($totalPrice, 0, ',', '.') }}
+                                </td>
+
+                                <!-- Status Pembayaran -->
+                                <td>
+                                    @if ($groupedTransactions[0]->payment->status == 'paid')
                                         <span class="badge bg-success">Sudah Dibayar</span>
-                                    @elseif ($transaction->status == 'pending')
+                                    @elseif ($groupedTransactions[0]->payment->status == 'pending')
                                         <span class="badge bg-warning">Menunggu Pembayaran</span>
-                                    @elseif ($transaction->status == 'approved')
+                                    @elseif ($groupedTransactions[0]->payment->status == 'approved')
                                         <span class="badge bg-info">Disetujui</span>
-                                    @elseif ($transaction->status == 'rejected')
+                                    @elseif ($groupedTransactions[0]->payment->status == 'rejected')
                                         <span class="badge bg-danger">Ditolak</span>
                                     @endif
                                 </td>
 
+                                <!-- Tanggal Pembayaran -->
+                                <td>{{ $groupedTransactions[0]->created_at->format('d M Y, H:i') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             @endif
-
         </div>
-
     </main>
     @include('user.component.footer') <!-- Footer -->
 </body>

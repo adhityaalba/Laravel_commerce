@@ -15,7 +15,8 @@
     <!-- Navbar atas -->
     <nav class="navbar navbar-dark navbar-expand-lg" style="background-color: rgb(248, 93, 93)">
         <div class="container">
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                aria-controls="sidebar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="{{ route('Home') }}">Commerce</a>
@@ -39,10 +40,17 @@
         <div class="row min-vh-100">
             <!-- Sidebar for desktop -->
             <div class="col-auto px-0 d-none d-lg-block">
-                <div class="sidebar bg-danger text-white p-3" style="width: 250px; position: fixed; top: 56px; height: calc(100vh - 56px); overflow-y: auto;">
+                <div class="sidebar bg-danger text-white p-3"
+                    style="width: 250px; position: fixed; top: 56px; height: calc(100vh - 56px); overflow-y: auto;">
                     <h4 class="text-center">Admin Menu</h4>
-                    <a href="{{ route('admin.transactions') }}" class="d-block text-white mb-2"><i class="fas fa-money-check-alt me-2"></i> Transaksi</a>
-                    <a href="{{ route('admin.products') }}" class="d-block text-white mb-2"><i class="fas fa-box me-2"></i> Produk</a>
+                    <a href="{{ route('admin.transactions') }}" class="d-block text-white mb-2"><i
+                            class="fas fa-money-check-alt me-2"></i> Transaksi</a>
+                    <a href="{{ route('admin.products') }}" class="d-block text-white mb-2"><i
+                            class="fas fa-box me-2"></i> Produk</a>
+                    <a href="{{ route('admin.customers') }}" class="d-block text-white mb-2"><i
+                            class="fas fa-users me-2"></i> Pelanggan</a>
+                    <a href="{{ route('admin.transaction.details') }}" class="d-block text-white mb-2"><i
+                            class="fas fa-info-circle me-2"></i> Detail Transaksi</a>
                 </div>
             </div>
 
@@ -61,4 +69,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

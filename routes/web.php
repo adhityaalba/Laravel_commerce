@@ -78,11 +78,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
     Route::get('/admin/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
     Route::get('/admin/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
-    Route::put('/admin/products/{id}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+    Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('/admin/products/{id}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+    Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
 
-    Route::post('/admin/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
 
+    // Pelanggan
     Route::get('/customers', [AdminController::class, 'customers'])->name('admin.customers');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::delete('/admin/customers/{id}', [AdminController::class, 'deleteCustomer'])->name('admin.customers.delete');
+
+
+    // Detail Transaksi
+    Route::get('/transactions/details', [AdminController::class, 'transactionDetails'])->name('admin.transaction.details');
 });

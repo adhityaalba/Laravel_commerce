@@ -1,0 +1,41 @@
+# Ignore node_modules and vendor directories
+/node_modules
+/vendor
+
+# Ignore environment configuration files
+.env
+.env.*.local
+
+# Ignore Laravel cache and session files
+/storage/*
+!/storage/app
+!/storage/public
+/storage/*.key
+
+# Ignore compiled assets
+/public/hot
+/public/storage
+/public/*.log
+
+# Ignore Laravel specific directories and files
+/.vscode
+/.idea
+/.phpunit.result.cache
+/.env.local
+/.env.development.local
+/.env.production.local
+/.env.testing.local
+/.env.example
+
+# Ignore IDE specific files
+/.idea/
+/*.sublime-workspace
+/*.sublime-project
+/.vscode/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Composer's lock file on specific branches (optional)
+composer.lock

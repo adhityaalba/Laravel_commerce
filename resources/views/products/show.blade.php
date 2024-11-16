@@ -28,6 +28,9 @@
                     <p><strong>Stok:</strong> {{ $product->stok }}</p>
                     <p><strong>Deskripsi:</strong> {{ $product->deskripsi }}</p>
                     <p><strong>Kategori:</strong> {{ $product->kategori }}</p>
+                    <button type="button" class="btn btn-success add-to-cart" data-id="{{ $product->id }}">
+                        Add to Cart
+                    </button>
                     <a href="{{ route('Home') }}" class="btn btn-primary">Kembali ke Halaman Utama</a>
                 </div>
             </div>
@@ -42,5 +45,65 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
     integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous">
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        const cartCountElement = document.querySelector(
+            '.notif .circle'); // Elemen yang menampilkan jumlah keranjang
+
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Cek apakah pengguna sudah login
+                const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+
+                if (!isLoggedIn) {
+                    // Tampilkan SweetAlert
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'HARAP LOGIN TERLEBIH DAHULU!',
+                        text: 'Anda perlu login untuk menambahkan produk ke keranjang.',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    // Jika sudah login, lakukan aksi untuk menambahkan ke keranjang
+                    const productId = this.getAttribute('data-id');
+                    const url = `/cart/add/${productId}`;
+
+                    // Kirim permintaan POST ke server untuk menambahkan ke keranjang
+                    fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            }
+                            throw new Error('Network response was not ok.');
+                        })
+                        .then(data => {
+                            // Update jumlah kuantitas di keranjang
+                            cartCountElement.textContent = data
+                                .totalItems; // Update tampilan kuantitas
+
+                            // Tampilkan SweetAlert sukses
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sukses!',
+                                text: 'Produk berhasil ditambahkan ke keranjang.',
+                                confirmButtonText: 'OK'
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Ada masalah dengan fetch operation:', error);
+                        });
+                }
+            });
+        });
+    });
+</script>
+
 
 </html>

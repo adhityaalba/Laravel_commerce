@@ -16,5 +16,11 @@ class Product extends Model
         'stok',
         'deskripsi',
         'kategori',
+        'gambar',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(TransactionsUser::class);
+    }
 }

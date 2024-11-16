@@ -11,7 +11,7 @@
                     <a class="nav-link" aria-current="page" href="{{ route('Home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('Home') }}">Shop</a>
+                    <a class="nav-link" href="{{ route('Home') }}">Products</a>
                 </li>
             </ul>
 

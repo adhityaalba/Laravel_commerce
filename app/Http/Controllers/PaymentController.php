@@ -3,57 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-
+use App\Models\TransactionsUser;
 
 class PaymentController extends Controller
 {
-    // Menampilkan halaman pembayaran dengan invoice
     public function index()
     {
-        $cart = Session::get('cart', []);
-        $total = array_reduce($cart, function ($carry, $item) {
-            return $carry + ($item['price'] * $item['quantity']);
-        }, 0);
+        // Ambil cart dari session
+        $cart = Session::get('cart', []);  // Menyediakan default array kosong jika tidak ada data di session
 
-        return view('payment.index', compact('cart', 'total'));
+        // Cek apakah cart kosong
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
+        }
+
+        // Hitung total harga dari semua item di cart
+        $totalPrice = 0;
+        foreach ($cart as $productId => $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+
+        // Kirim data cart dan totalPrice ke view
+        return view('payment.index', compact('cart', 'totalPrice'));
     }
 
-
-    // AMBIL ONGKIR
-    public function getOngkir(Request $request)
-    {
-        // Generate ongkir random antara 10.000 dan 30.000
-        $ongkir = rand(10000, 30000);
-
-        // Mengambil data lokasi dari frontend (optional, hanya untuk ditampilkan)
-        $userLocation = $request->input('location');  // Lokasi pengguna, misalnya untuk display
-
-        // Kembalikan response ongkir dan lokasi ke frontend
-        return response()->json([
-            'ongkir' => $ongkir,
-            'user_location' => $userLocation,
-        ]);
-    }
-
-
-
-    // Mengunggah bukti pembayaran
     public function uploadPaymentProof(Request $request)
     {
+        // Validasi file bukti pembayaran
         $request->validate([
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Menyimpan gambar bukti pembayaran langsung ke public path
-        $paymentProof = $request->file('payment_proof');
-        $fileName = time() . '.' . $paymentProof->getClientOriginalExtension();
-        $paymentProof->move(public_path('storage/payment_proofs'), $fileName);
-        $path = 'payment_proofs/' . $fileName;
+        // Menyimpan gambar bukti pembayaran
+        if ($request->hasFile('payment_proof') && $request->file('payment_proof')->isValid()) {
+            $paymentProof = $request->file('payment_proof');
+            $fileName = time() . '.' . $paymentProof->getClientOriginalExtension();
+            $paymentProof->move(public_path('storage/payment_proofs'), $fileName);
+            $path = 'payment_proofs/' . $fileName;
+        } else {
+            return redirect()->back()->with('error', 'File yang diupload tidak valid.');
+        }
 
         // Menyimpan data pembayaran ke database
         $payment = new Payment();
@@ -62,11 +54,43 @@ class PaymentController extends Controller
         $payment->status = 'pending';
         $payment->save();
 
-        // Menyimpan informasi pembayaran di session untuk keperluan checkout
-        Session::put('payment_status', 'pending');
+        // Ambil data keranjang dari session
+        $cart = Session::get('cart', []);
 
-        // Kosongkan keranjang setelah pembayaran berhasil
-        Session::forget('cart');  // Menghapus session cart
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong.');
+        }
+
+        // Proses transaksi untuk setiap produk dalam keranjang
+        foreach ($cart as $productId => $item) {
+            // Cek apakah transaksi untuk produk ini sudah ada
+            $existingTransaction = TransactionsUser::where('payment_id', $payment->id)
+                ->where('product_id', $productId)
+                ->first();
+
+            if ($existingTransaction) {
+                // Jika sudah ada, update transaksi dengan menambah kuantitas dan total harga
+                $existingTransaction->quantity += $item['quantity'];
+                $existingTransaction->total_price += $item['price'] * $item['quantity'];
+                $existingTransaction->save();
+            } else {
+                // Jika belum ada, buat transaksi baru
+                TransactionsUser::create([
+                    'user_id' => auth()->id(),
+                    'product_id' => $productId,
+                    'payment_id' => $payment->id,
+                    'quantity' => $item['quantity'],
+                    'total_price' => $item['price'] * $item['quantity'],
+                ]);
+            }
+
+            // Kurangi stok produk
+            $product = Product::findOrFail($productId);
+            $product->decrement('stok', $item['quantity']);
+        }
+
+        // Kosongkan keranjang setelah transaksi selesai
+        Session::forget('cart');
 
         // Redirect ke halaman pembayaran dengan pesan sukses
         return redirect()->route('payment')->with('success', 'Bukti pembayaran berhasil diunggah dan keranjang telah dikosongkan.');

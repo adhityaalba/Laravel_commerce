@@ -20,31 +20,75 @@ class ProductController extends Controller
         return view('products.create'); // Mengembalikan view untuk form tambah produk
     }
 
-    // Menyimpan produk baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'stok' => 'required|integer',
-            'deskripsi' => 'nullable|string',
-            'kategori' => 'required|string|max:255',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-        ]);
-
-        $data = $request->all(); // Mengambil semua data dari request
-
-        // Mengunggah gambar jika ada
-        if ($request->hasFile('gambar')) {
-            $imageName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('images/products'), $imageName);
-            $data['gambar'] = 'images/products/' . $imageName; // Menyimpan path ke database
-        }
-
-        Product::create($data); // Menyimpan produk ke database
-
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
-    }
+    
+     // Menyimpan produk baru
+     public function store(Request $request)
+     {
+         $request->validate([
+             'nama' => 'required|string|max:255',
+             'harga' => 'required|numeric',
+             'stok' => 'required|integer',
+             'deskripsi' => 'nullable|string',
+             'kategori' => 'required|string|max:255',
+             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         ]);
+ 
+         // Inisialisasi data yang akan disimpan
+         $data = $request->all();
+ 
+         // Proses upload gambar jika ada
+         if ($request->hasFile('gambar')) {
+             $image = $request->file('gambar');
+             $fileName = time() . '.' . $image->getClientOriginalExtension();
+             $image->move(public_path('images/products'), $fileName); // Simpan ke public/images/products
+             $data['gambar'] = 'images/products/' . $fileName;
+         }
+ 
+         // Simpan data produk ke database
+         Product::create($data);
+ 
+         return redirect()->route('admin.products')->with('success', 'Produk berhasil ditambahkan.');
+     }
+ 
+     // Memperbarui data produk
+     public function update(Request $request, $id)
+     {
+         $request->validate([
+             'nama' => 'required|string|max:255',
+             'harga' => 'required|numeric',
+             'stok' => 'required|integer',
+             'deskripsi' => 'nullable|string',
+             'kategori' => 'required|string|max:255',
+             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         ]);
+ 
+         // Ambil produk berdasarkan ID
+         $product = Product::findOrFail($id);
+ 
+         // Inisialisasi data yang akan diperbarui
+         $data = $request->all();
+ 
+         // Proses upload gambar baru jika ada
+         if ($request->hasFile('gambar')) {
+             // Hapus gambar lama jika ada
+             if ($product->gambar && file_exists(public_path($product->gambar))) {
+                 unlink(public_path($product->gambar));
+             }
+ 
+             // Simpan gambar baru
+             $image = $request->file('gambar');
+             $fileName = time() . '.' . $image->getClientOriginalExtension();
+             $image->move(public_path('images/products'), $fileName);
+             $data['gambar'] = 'images/products/' . $fileName;
+         }
+ 
+         // Update data produk di database
+         $product->update($data);
+ 
+         return redirect()->route('admin.products')->with('success', 'Produk berhasil diperbarui.');
+     }
+    
+    
 
     // Menampilkan detail produk
     public function show($id)
@@ -60,37 +104,6 @@ class ProductController extends Controller
         return view('products.edit', compact('product')); // Kembali ke view edit produk
     }
 
-    // Mengupdate produk
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'stok' => 'required|integer',
-            'deskripsi' => 'nullable|string',
-            'kategori' => 'required|string|max:255',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-        ]);
-
-        $product = Product::findOrFail($id); // Mengambil produk berdasarkan ID
-        $data = $request->all(); // Mengambil semua data dari request
-
-        // Mengunggah gambar jika ada
-        if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika perlu
-            if ($product->gambar) {
-                unlink(public_path($product->gambar)); // Menghapus gambar dari server
-            }
-
-            $imageName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('images/products'), $imageName);
-            $data['gambar'] = 'images/products/' . $imageName; // Menyimpan path ke database
-        }
-
-        $product->update($data); // Mengupdate produk
-
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
-    }
 
     // Menghapus produk
     public function destroy($id)
